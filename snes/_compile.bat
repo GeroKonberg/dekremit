@@ -1,0 +1,1 @@
+asar --no-title-check --symbols=wla "_main.asm" "_main.sfc"
