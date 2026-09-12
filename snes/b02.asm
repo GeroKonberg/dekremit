@@ -459,10 +459,6 @@ KonzertPlaySFX:
 
 
 KonzertInstDriver: ;inst sound driver to SPC
-	lda #$0041 ;init song volume
-	sta DPVolMusic
-	lda #$0051 ;init SFX volume
-	sta DPVolSFX
 	stz DPRenderDelay
 	lda.l KonzertSndDir
 	sta $c0
@@ -495,6 +491,15 @@ KonzertInstSamples: ;inst BRR samples to SPC
 	jsr RoutineProgramLoader
 	rtl
 
+
+RoutineInitVolumes:
+	lda #$0041 ;init song volume
+	sta DPVolMusic
+	sta.l $70000c
+	lda #$0051 ;init SFX volume
+	sta DPVolSFX
+	sta.l $70000e
+	rtl
 
 
 KonzertSndDir:
