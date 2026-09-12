@@ -12,14 +12,32 @@ GKFInitCode:
 	stz $2104
 	dex
 	bne -
-;	lda $700000 ;check if sram has been freed
-;	beq ++
-;	ldx #$07ff
-;-	lda #$0000
-;	sta.l $700000,x ;clear SRAM if uncleared
-;	dex
-;	bne -
-++	lda #$0001
+	lda #$4b47 ;store SRAM key
+	sta.l $700002
+	nop
+	lda.l $700002
+	cmp #$4b47 ;verify SRAM key
+	bne ++
+	pha
+	lda.l $70000c
+	sta DPVolMusic
+	lda.l $70000e
+	sta DPVolSFX
+	lda $700000 ;check if SRAM has been freed
+	beq +
+	ldx #$07ff
+-	lda #$0000
+	sta.l $700000,x ;clear SRAM if uncleared
+	dex
+	bne -
+	jsl RoutineInitVolumes ;init volumes on fresh SRAM
++	pla
+	sta.l $700002
+	bra +++
+++	jsl RoutineInitVolumes ;init volumes when no SRAM was found
++++	lda #$0046 ;GKF 
+	sta.l $700004
+	lda #$0001
 	sta $4200
 	stz $4016
 	stz $420C
@@ -93,6 +111,8 @@ GKFInitCode:
 	cmp #$2000
 	bne -
 
+
+
 GKFInitPalette:
 	lda.l InitPalPos
 	sta $c0
@@ -135,10 +155,22 @@ GKFInitTiles:
 	sta DPTimerUnit
 	lda #$0006 ;set timer (00:03)
 	jsl RoutineSetTimer
+	lda.l $70000c
+	bne +
+	jsl RoutineInitVolumes ;init volumes if zero (lowest is 01)
++	lda.l $70000e
+	bne +
+	jsl RoutineInitVolumes ;init volumes if zero (lowest is 01)
++	lda DPVolMusic ;update music/sfx scales accordingly
+	and #$007f
+	sta $2141
 --	jsl GKFTickTimer ;wait
 	bpl --
+	lda DPVolSFX  ;update music/sfx scales accordingly
+	and #$007f
+	ora #$0080
+	sta $2141
 	jml DekremitSTART ;main routine after the title screen
-
 
 RoutineSetTimer:
 	pha
@@ -670,6 +702,7 @@ DekremitMusInc:
 	clc
 	adc #$0008
 	sta DPVolMusic
+	sta.l $70000c
 	and #$007f
 	sta $2141
 +	rts
@@ -681,6 +714,7 @@ DekremitMusDec:
 	sec
 	sbc #$0008
 	sta DPVolMusic
+	sta.l $70000c
 	and #$007f
 	sta $2141
 +	rts
@@ -692,6 +726,7 @@ DekremitSFXInc:
 	clc
 	adc #$0008
 	sta DPVolSFX
+	sta.l $70000e
 	and #$007f
 	ora #$0080
 	sta $2141
@@ -704,6 +739,7 @@ DekremitSFXDec:
 	sec
 	sbc #$0008
 	sta DPVolSFX
+	sta.l $70000e
 	and #$007f
 	ora #$0080
 	sta $2141
@@ -838,23 +874,35 @@ DekremitLevelSet: ;set up level with rules
 	asl
 	asl
 	tax
+	lda.l $700002
+	cmp #$4b47 ;verify SRAM string
+	beq ++
 	lda.w OPStoreRecords,x
-;	lda.l $700002,x
 	ora #$3030
 	cmp #$3a00 ;skip upon invalid values
-	bpl ++
+	bpl +++
 	sta $0168
 	lda.w OPStoreRecords+2,x
-;	lda.l $700004,x
 	ora #$3030
 	sta $016A
 	lda.w OPStoreRecords+4,x
-;	lda.l $700006,x
+	ora #$3030
+	sta $016C
+	bra +++
+
+++	lda.l $700010,x
+	ora #$3030
+	cmp #$3a00 ;skip upon invalid values
+	bpl +++
+	sta $0168
+	lda.l $700012,x
+	ora #$3030
+	sta $016A
+	lda.l $700014,x
 	ora #$3030
 	sta $016C
 
-
-++	ldx #$0020 ;clear statistics
++++	ldx #$0020 ;clear statistics
 -	stz DPStat0s,x
 	dex
 	dex
@@ -1060,6 +1108,12 @@ DekremitPauseGame:
 
 
 DekremitLevelDone:
+	lda DPNowExt
+	cmp #$0002
+	bne +
+	inc DPNowExt ;declare fail if puzzle remains unsolved
++
+
 	lda #$0004 ;load jingle 4
 	jsl KonzertLoadMIDI
 	lda #$0007 ;load tint 7
@@ -1125,18 +1179,26 @@ DekremitLevelDone:
 	asl
 	asl
 	tax
+	lda.l $700002
+	cmp #$4b47 ;verify SRAM string
+	beq ++
 	lda $0168
 	sta.w OPStoreRecords,x
-;	sta.l $700002,x
 	lda $016A
 	sta.w OPStoreRecords+2,x
-;	sta.l $700004,x
 	lda $016C
 	sta.w OPStoreRecords+4,x
-;	sta.l $700006,x
+	bra +++
+
+++	lda $0168
+	sta.l $700010,x
+	lda $016A
+	sta.l $700012,x
+	lda $016C
+	sta.l $700014,x
 
 	;get personal statistics
-	ldx #$001e
++++	ldx #$001e
 --	ldy #$0000
 	lda.l PresetScorePos,x
 	sta $c0
