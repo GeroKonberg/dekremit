@@ -1492,7 +1492,7 @@ CheckForZeroes:
 	bne +++
 	lda.w SPLayer2FG,x
 	and #$00ff
-	cmp #$0037
+	cmp #$0038
 	bmi +++
 	lda.w SPLayer2FG,x
 	and #$ff00
