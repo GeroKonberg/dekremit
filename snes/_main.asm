@@ -8,6 +8,7 @@ optimize dp always
 org $000000
 base $000000
 
+skip 1 ;offset by one (compared to SPC-side defines)
 DPTimerUnit: ;units to divide timer from
 skip 2
 DPTimerMin:
@@ -185,7 +186,7 @@ base $00FFD5 ;SFC_ROMMETA
 	db $00 ;LoRom
 	db $01 ;ROM + RAM
 	db $09 ;ROM size
-	db $00 ;$01 ;SRAM size
+	db $01 ;$01 ;SRAM size
 	db $01 ;country code
 	db $FA ;developer ID
 	db $00 ;ROM version
