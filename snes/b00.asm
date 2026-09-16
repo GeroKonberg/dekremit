@@ -151,7 +151,7 @@ GKFInitTiles:
 	jsl GKFLoadTint
 	lda #$0001 ;load field 1
 	jsl GKFLoadFields
-	lda #$1000 ;set tempo divider
+	lda #$0200 ;set tempo divider
 	sta DPTimerUnit
 	lda #$0006 ;set timer (00:03)
 	jsl RoutineSetTimer
@@ -164,9 +164,12 @@ GKFInitTiles:
 +	lda DPVolMusic ;update music/sfx scales accordingly
 	and #$007f
 	sta $2141
---	jsl GKFTickTimer ;wait
+--	jsl RoutineReadJoypad ;check for start button
+	cmp #$0012
+	beq ++
+	jsl GKFTickTimer ;wait
 	bpl --
-	lda DPVolSFX  ;update music/sfx scales accordingly
+++	lda DPVolSFX  ;update music/sfx scales accordingly
 	and #$007f
 	ora #$0080
 	sta $2141
@@ -234,6 +237,7 @@ GKFTickTimer: ;tick DPTimer in decimal (N flag = time ran out)
 	bne ++
 	stx DPLatestPos
 	txa
+	inc DPGridEnd
 --	cmp DPGridEnd
 	bpl +
 	tax
@@ -244,7 +248,8 @@ GKFTickTimer: ;tick DPTimer in decimal (N flag = time ran out)
 	clc
 	adc #$0010
 	bra --
-+	stx DPCursorPos
++	dec DPGridEnd
+	stx DPCursorPos
 	ldx DPLatestPos
 	stz SPLayer1FG,x
 	ldx DPCursorPos
@@ -1284,7 +1289,7 @@ LevelHeaders: ;per-level settings (Field/GFX/Tint/Music/GridSize/ExtFlags/Timers
 	dw $0003,$0003,$0004,$0007,$0009,$0001,$0500
 	db " PUZZLE x9        "
 	dw $0003,$0003,$0004,$0007,$000A,$0001,$0500
-	db " PUZZLE 10        "
+	db " PUZZLE x10       "
 
 	dw $0003,$0003,$0006,$0008,$0008,$0005,$0300
 	db " EXPERT 3m        "
