@@ -360,12 +360,15 @@ KonzertReadDelta:
 	bcc +
 	inc $f8 ;check for overflows (two halfes equal one new tick)
 +	sta $fc ;store low bit
-	lda $f8
+-	lda $f8
 	cmp #$0002
-	bne +
-	stz $f8
+	bmi +
+	dec $f8
+	dec $f8
 	inc $fc
+	bra -
 +	lda $fc
+	clc
 	adc $fd
 	and #$7fff
 	clc
