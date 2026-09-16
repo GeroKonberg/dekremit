@@ -11,7 +11,7 @@
 ;2025,2026
 
 ;Voice commands:
-;$E0 xx		Program change
+;$E0 xx		Program change / Wait by x times 64s (used in place of double-length note deltas)
 ;$E1 xx		Pan (absolute)
 ;$E2 xx		[TODO] Panbrello strength (by 64/2 ticks per rotation)
 ;$E3 xx		Vibrato strength
@@ -19,7 +19,7 @@
 ;$E5 xx		Global volume
 ;$E6 xx		Reverb multiplier (volume>feedback)
 ;$E7 xx		Song tempo (does not affect SFX)
-;$E8 xx		Wait by x times 64s (used in place of double-length note deltas)
+;$E8 xx		[unused]
 ;$E9 xx		[TODO] Legato + Portamento strength
 ;$EA xx		Bend (percentage)
 ;$EB xx		[TODO] Tremolo strength
@@ -172,8 +172,8 @@ base $0300 ;driver page
 ;	db "konzert700 V0.44C"
 Konz700Init:
 	clrp
-	mov SongVol,#$7f;init song volumes
-	mov SFXVol,#$9f;init SFX volume
+;	mov SongVol,#$7f;init song volumes
+;	mov SFXVol,#$9f;init SFX volume
 	mov a,Konz700LoadRef+5 ;init echo buffer (hardcoded at the moment, TODO)
 	mov y,a
 	mov a,Konz700LoadRef+4
@@ -501,9 +501,14 @@ Konz700VCMDs:
 	dw KonzVCMDee
 	dw KonzVCMDef
 
-KonzVCMDe0:
+KonzVCMDe0: ;00 drum kit, 01-7f melodic, 80-FF long delta
+	cmp a,#$00
+	bmi ++
 	mov VTkE0inst+x,a
 	call RoutineCalcInst
+	ret
+++	and a,#$7f
+	mov TrkDelta+1+x,a
 	ret
 
 KonzVCMDe1:
@@ -542,7 +547,7 @@ KonzVCMDe7:
 	ret
 
 KonzVCMDe8:
-	mov TrkDelta+1+x,a
+	mov VTkE8+x,a
 	ret
 
 KonzVCMDe9:
