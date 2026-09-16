@@ -19,11 +19,13 @@
 	;dc last reverb (CC#5B) [$E6]
 	;de last tempo (META#51) [$E7]
 
+	;e2 last porta (CC#05) [$E9]
 	;e4	last bend (Ex pitch wheel) [$EA]
-	;e6 last chorus (CC#5D) [$EB trem]
+	;e6 last tremolo (CC#5C) [$EB trem]
+	;e8 last chorus (CC#5D) [$EC trem delay]
 
 	;ea	last volume (CC#07) [$ED vol]
-	;ec last start (CC#??) [$EE start]
+	;ec last start (CC#04) [$EE start]
 	;ee last termination [$EF end]
 
 
@@ -221,12 +223,12 @@ KonzertEventCC:
 
 
 PresetCCLookup: ;$00 = skip byte
-	db $00,$03,$04,$00, $00,$00,$00,$0D, $00,$00,$01,$0D, $00,$00,$0e,$00 ;00-0f
+	db $00,$03,$04,$00, $0e,$09,$00,$0d, $00,$00,$01,$0d, $00,$00,$0e,$00 ;00-0f
 	db $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00 ;10-1f
 	db $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00 ;20-2f
 	db $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00 ;30-3f
-	db $00,$0C,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00 ;40-4f
-	db $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$06, $0B,$0B,$00,$00 ;50-5f
+	db $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00 ;40-4f
+	db $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$06, $0b,$0c,$00,$00 ;50-5f
 	db $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00 ;60-6f
 	db $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00, $00,$00,$00,$00 ;70-7f
 
@@ -402,10 +404,11 @@ KonzertWriteDelta: ;write delta wait (00-7Fs) whenever necessary
 	beq +++
 	cmp #$0100
 	bmi ++
-	lda #$00e8
+	lda #$00e0
 	jsr KonzertSubWriter
 	lda $fb
 	and #$00ff
+	ora #$0080
 	jsr KonzertSubWriter
 ++	lda $fa
 	and #$00ff
