@@ -1,8 +1,3 @@
-!RangeMusic = $0C00
-!RangeEcho = $2A00
-!RangeSamples = $6C00
-
-
 ;konzert700
 ;a simplified MIDI player and
 ;series of conversion tools for the 
