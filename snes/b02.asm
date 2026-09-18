@@ -1,6 +1,9 @@
 ;BANK 02
 
 
+!RangeMusic = $0C00
+!RangeEcho = $2A00
+!RangeSamples = $6C00
 
 ;Sound driver & global settings
 	db "konzert700 V0.44C (C)2026 GKF/J.Keller"
@@ -567,6 +570,8 @@ RoutineProgramLoader:
 	rts
 
 
+
+
 ;BRR sample banks
 SampleDir:
 	dd SampBank00
@@ -720,6 +725,11 @@ SongDir:
 	dd Song08
 	dd Song09
 	dd Song0A
+
+
+
+KonzertStoreDriver:
+incsrc "audio/konzert700.asm"
 
 
 

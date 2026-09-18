@@ -1129,8 +1129,5 @@ Tint0A:
 	incbin "visuals/Tint0A.pal"
 
 
-KonzertStoreDriver:
-incsrc "audio/konzert700.asm"
-
 ;	db "BANK01"
 
