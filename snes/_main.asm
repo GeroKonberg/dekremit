@@ -186,7 +186,7 @@ base $00FFD5 ;SFC_ROMMETA
 	db $00 ;LoRom
 	db $01 ;ROM + RAM
 	db $09 ;ROM size
-	db $01 ;$01 ;SRAM size
+	db $00 ;$01 ;SRAM size
 	db $01 ;country code
 	db $FA ;developer ID
 	db $00 ;ROM version
@@ -200,67 +200,67 @@ base $00FFE0
 
 ;BANK 0
 org $000000
-base $008000 ;BANK 0
+base $808000 ;BANK 0
 incsrc "b00.asm"
 
 org $008000 ;BANK 1
-base $018000
+base $818000
 incsrc "b01.asm"
 
 org $010000 ;BANK 2
-base $028000
+base $828000
 incsrc "b02.asm"
 
 org $018000 ;BANK 3
-base $038000
+base $838000
 incsrc "b03.asm"
 
 org $020000 ;BANK 4
-base $048000
+base $848000
 incsrc "b04.asm"
 
 org $028000 ;BANK 5
-base $058000
+base $858000
 incsrc "b05.asm"
 
 org $030000 ;BANK 6
-base $068000
+base $868000
 incsrc "b06.asm"
 
 org $038000 ;BANK 7
-base $078000
+base $878000
 incsrc "b07.asm"
 
 org $040000 ;BANK 8
-base $088000
+base $888000
 incsrc "b08.asm"
 
 org $048000 ;BANK 9
-base $098000
+base $898000
 incsrc "b09.asm"
 
 org $050000 ;BANK A
-base $0A8000
+base $8A8000
 incsrc "b0A.asm"
 
 org $058000 ;BANK B
-base $0B8000
+base $8B8000
 incsrc "b0B.asm"
 
 org $060000 ;BANK C
-base $0C8000
+base $8C8000
 incsrc "b0C.asm"
 
 org $068000 ;BANK D
-base $0D8000
+base $8D8000
 incsrc "b0D.asm"
 
 org $070000 ;BANK E
-base $0E8000
+base $8E8000
 incsrc "b0E.asm"
 
 org $078000 ;BANK F
-base $0F8000
+base $8F8000
 incsrc "b0F.asm"
 
 

@@ -39,11 +39,11 @@ GKFInitCode:
 	sta.l $700004
 	lda #$0001
 	sta $4200
-	stz $4016
 	stz $420C
+	sta $420D
+	stz $4016
 	lda #$008F
 	sta $2100
-	stz $420D
 	lda #$00FF
 	sta $4201
 	stz $2101
@@ -195,7 +195,7 @@ GKFTickTimer: ;tick DPTimer in decimal (N flag = time ran out)
 	bne +++
 	phx
 	ldx DPGridEnd
---	lda SPLayer2FG,x
+--	lda.w SPLayer2FG,x
 	and #$00ff
 	bne ++
 	dex
@@ -232,7 +232,7 @@ GKFTickTimer: ;tick DPTimer in decimal (N flag = time ran out)
 ++	plx
 	phx
 	ldx DPCursorPos
-	lda SPLayer2FG,x ;check if cursor grid is aligned to air
+	lda.w SPLayer2FG,x ;check if cursor grid is aligned to air
 	and #$00ff
 	bne ++
 	stx DPLatestPos
@@ -241,7 +241,7 @@ GKFTickTimer: ;tick DPTimer in decimal (N flag = time ran out)
 --	cmp DPGridEnd
 	bpl +
 	tax
-	lda SPLayer2FG,x ;check if cursor grid is aligned to air
+	lda.w SPLayer2FG,x ;check if cursor grid is aligned to air
 	and #$00ff
 	bne +
 	txa
@@ -251,10 +251,10 @@ GKFTickTimer: ;tick DPTimer in decimal (N flag = time ran out)
 +	dec DPGridEnd
 	stx DPCursorPos
 	ldx DPLatestPos
-	stz SPLayer1FG,x
+	stz.w SPLayer1FG,x
 	ldx DPCursorPos
 	lda #$003e
-	sta SPLayer1FG,x
+	sta.w SPLayer1FG,x
 	jsl RoutineUpdateLayer1
 ++	plx
 +++	lda DPTimerMin
@@ -915,7 +915,7 @@ DekremitLevelSet: ;set up level with rules
 	lda #$0088 ;prepare cursor position
 	sta DPCursorPos
 	sta DPLatestPos
-	lda #$0003 ;set tempo divider
+	lda #$0005 ;set tempo divider
 	sta DPTimerUnit
 	lda DPNowExt ;if 1, set 2 to prevent any new tiles in puzzle mode
 	cmp #$0001
@@ -1295,8 +1295,8 @@ LevelHeaders: ;per-level settings (Field/GFX/Tint/Music/GridSize/ExtFlags/Timers
 	db " EXPERT 3m        "
 	dw $0003,$0003,$0009,$0009,$0008,$0004,$0300
 	db " METEOR 3m        "
-	dw $0003,$0003,$0005,$0003,$0008,$0006,$0030
-	db " WISHES 30s       "
+	dw $0003,$0003,$0005,$0003,$0008,$0006,$0100
+	db " WISHES 1m        "
 
 
 
